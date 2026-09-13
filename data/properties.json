@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "Green Valley Farm",
+    "type": "Agricultural",
+    "location": "Nashik, Maharashtra",
+    "size": "5 Acres",
+    "price": "5 crores /",
+    "status": "Available",
+    "feat1": "Irrigated",
+    "feat2": "Road Access",
+    "feat3": "Water Supply",
+    "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop",
+    "desc": "Premium agricultural land with irrigation and road access."
+  },
+  {
+    "id": 2,
+    "name": "Riverside Heights",
+    "type": "Residential",
+    "location": "Alibaug, Maharashtra",
+    "size": "2,400 sq.ft",
+    "price": "₹85L / plot",
+    "status": "Available",
+    "feat1": "River View",
+    "feat2": "Green Area",
+    "feat3": "Gated",
+    "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop",
+    "desc": "Residential plot with river view in gated community."
+  },
+  {
+    "id": 3,
+    "name": "Palm Grove Plot",
+    "type": "Residential",
+    "location": "ECR, Chennai",
+    "size": "1,800 sq.ft",
+    "price": "₹62L / plot",
+    "status": "Available",
+    "feat1": "Beach Proximity",
+    "feat2": "Main Road",
+    "feat3": "Corner Plot",
+    "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop",
+    "desc": "Prime residential plot near beach."
+  },
+  {
+    "id": 4,
+    "name": "Tech Corridor Land",
+    "type": "Commercial",
+    "location": "HITEC City, Hyderabad",
+    "size": "15,000 sq.ft",
+    "price": "₹4.5Cr / plot",
+    "status": "Available",
+    "feat1": "Metro Adjacent",
+    "feat2": "Commercial Zone",
+    "feat3": "Highway Facing",
+    "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop",
+    "desc": "Commercial land in tech corridor."
+  },
+  {
+    "id": 5,
+    "name": "Hill View Retreat",
+    "type": "Farmhouse",
+    "location": "Lonavala, Maharashtra",
+    "size": "3 Acres",
+    "price": "₹75L / acre",
+    "status": "Available",
+    "feat1": "Hill View",
+    "feat2": "Nature",
+    "feat3": "Waterfall Nearby",
+    "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop",
+    "desc": "Scenic farmhouse land with hill view."
+  }
+]

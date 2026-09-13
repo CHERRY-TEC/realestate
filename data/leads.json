@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "name": "Rajesh Kumar",
+    "phone": "+91 98765 43210",
+    "email": "rajesh@email.com",
+    "interest": "Agricultural",
+    "message": "Looking for 5 acre farmland near Nashik",
+    "date": "2026-09-10",
+    "status": "New",
+    "type": "buyer"
+  },
+  {
+    "id": 2,
+    "name": "Priya Sharma",
+    "phone": "+91 87654 32109",
+    "email": "priya@email.com",
+    "interest": "Residential",
+    "message": "Want a plot in Alibaug area",
+    "date": "2026-09-11",
+    "status": "Contacted",
+    "type": "buyer"
+  },
+  {
+    "id": 3,
+    "name": "Arun Mehta",
+    "phone": "+91 76543 21098",
+    "email": "arun@email.com",
+    "interest": "Commercial",
+    "message": "Need commercial land in Hyderabad",
+    "date": "2026-09-12",
+    "status": "New",
+    "type": "seller"
+  },
+  {
+    "name": "Markanti Hanmanth",
+    "phone": "9553461265",
+    "email": "hanmanthmarkanti@gmail.com",
+    "interest": "Agricultural",
+    "message": "sedrfghjn",
+    "date": "2026-09-13",
+    "status": "New",
+    "type": "buyer",
+    "id": 1789319673704
+  }
+]
