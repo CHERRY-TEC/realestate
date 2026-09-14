@@ -1,8 +1,8 @@
 import { Pool } from "pg";
 
 const pool = new Pool({
-  connectionString: "postgresql://postgres.qhcbaqgbakuqpwzmkbrg:TERRAvista%40252@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require",
-  ssl: { rejectUnauthorized: false },
+  connectionString: "postgresql://postgres.qhcbaqgbakuqpwzmkbrg:TERRAvista%40252@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres",
+  ssl: { rejectUnauthorized: false, require: true },
 });
 
 async function initDB() {
