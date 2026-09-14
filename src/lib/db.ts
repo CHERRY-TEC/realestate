@@ -21,7 +21,8 @@ async function initDB() {
         feat2 TEXT DEFAULT '',
         feat3 TEXT DEFAULT '',
         image TEXT DEFAULT '',
-        description TEXT DEFAULT ''
+        description TEXT DEFAULT '',
+        video_url TEXT DEFAULT ''
       );
     `);
     await client.query(`
@@ -51,12 +52,12 @@ async function initDB() {
     // Seed default data if empty
     const propCount = await client.query("SELECT COUNT(*) FROM properties");
     if (parseInt(propCount.rows[0].count) === 0) {
-      await client.query(`INSERT INTO properties (id, name, type, location, size, price, status, feat1, feat2, feat3, image, description) VALUES
-        (1, 'Green Valley Farm', 'Agricultural', 'Nashik, Maharashtra', '5 Acres', '5 crores /', 'Available', 'Irrigated', 'Road Access', 'Water Supply', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Premium agricultural land with irrigation and road access.'),
-        (2, 'Riverside Heights', 'Residential', 'Alibaug, Maharashtra', '2,400 sq.ft', '₹85L / plot', 'Available', 'River View', 'Green Area', 'Gated', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Residential plot with river view in gated community.'),
-        (3, 'Palm Grove Plot', 'Residential', 'ECR, Chennai', '1,800 sq.ft', '₹62L / plot', 'Available', 'Beach Proximity', 'Main Road', 'Corner Plot', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Prime residential plot near beach.'),
-        (4, 'Tech Corridor Land', 'Commercial', 'HITEC City, Hyderabad', '15,000 sq.ft', '₹4.5Cr / plot', 'Available', 'Metro Adjacent', 'Commercial Zone', 'Highway Facing', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Commercial land in tech corridor.'),
-        (5, 'Hill View Retreat', 'Farmhouse', 'Lonavala, Maharashtra', '3 Acres', '₹75L / acre', 'Available', 'Hill View', 'Nature', 'Waterfall Nearby', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Scenic farmhouse land with hill view.')`);
+      await client.query(`INSERT INTO properties (id, name, type, location, size, price, status, feat1, feat2, feat3, image, description, video_url) VALUES
+        (1, 'Green Valley Farm', 'Agricultural', 'Nashik, Maharashtra', '5 Acres', '5 crores /', 'Available', 'Irrigated', 'Road Access', 'Water Supply', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Premium agricultural land with irrigation and road access.', ''),
+        (2, 'Riverside Heights', 'Residential', 'Alibaug, Maharashtra', '2,400 sq.ft', '₹85L / plot', 'Available', 'River View', 'Green Area', 'Gated', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Residential plot with river view in gated community.', ''),
+        (3, 'Palm Grove Plot', 'Residential', 'ECR, Chennai', '1,800 sq.ft', '₹62L / plot', 'Available', 'Beach Proximity', 'Main Road', 'Corner Plot', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Prime residential plot near beach.', ''),
+        (4, 'Tech Corridor Land', 'Commercial', 'HITEC City, Hyderabad', '15,000 sq.ft', '₹4.5Cr / plot', 'Available', 'Metro Adjacent', 'Commercial Zone', 'Highway Facing', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Commercial land in tech corridor.', ''),
+        (5, 'Hill View Retreat', 'Farmhouse', 'Lonavala, Maharashtra', '3 Acres', '₹75L / acre', 'Available', 'Hill View', 'Nature', 'Waterfall Nearby', 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop', 'Scenic farmhouse land with hill view.', '')`);
     }
 
     const leadCount = await client.query("SELECT COUNT(*) FROM leads");

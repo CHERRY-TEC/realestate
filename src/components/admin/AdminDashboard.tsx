@@ -10,7 +10,7 @@ import {
 interface Property {
   id: number; name: string; type: string; location: string; size: string;
   price: string; status: string; feat1: string; feat2: string; feat3: string;
-  image: string; description: string;
+  image: string; description: string; video_url: string;
 }
 
 interface Lead {
@@ -22,7 +22,7 @@ interface Review {
   id: number; name: string; rating: number; text: string; date: string; type: string;
 }
 
-const emptyProp: Property = { id: 0, name: "", type: "Agricultural", location: "", size: "", price: "", status: "Available", feat1: "", feat2: "", feat3: "", image: "", description: "" };
+const emptyProp: Property = { id: 0, name: "", type: "Agricultural", location: "", size: "", price: "", status: "Available", feat1: "", feat2: "", feat3: "", image: "", description: "", video_url: "" };
 
 const tabs = [
   { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -366,6 +366,11 @@ export default function AdminDashboard({ onLogout }: Props) {
                       <><Upload className="w-8 h-8 text-earth-300 mx-auto mb-2" /><p className="text-earth-400 text-sm">Click to upload land photo</p><p className="text-earth-300 text-xs mt-1">JPG, PNG up to 5MB</p></>
                     )}
                   </div>
+                </div>
+                <div>
+                  <label className="block text-earth-600 dark:text-white/60 text-sm mb-2 font-medium">Video URL (YouTube / Vimeo)</label>
+                  <input type="url" value={form.video_url} onChange={e => setForm({ ...form, video_url: e.target.value })} className="w-full bg-cream dark:bg-white/5 border border-earth-200 dark:border-white/10 rounded-xl px-4 py-3 text-navy dark:text-white focus:outline-none focus:border-gold transition-colors" placeholder="https://www.youtube.com/watch?v=..." />
+                  <p className="text-earth-400 text-xs mt-1">Paste YouTube or Vimeo link to show a property tour video</p>
                 </div>
                 <div className="grid sm:grid-cols-3 gap-5">
                   <div><label className="block text-earth-600 dark:text-white/60 text-sm mb-2 font-medium">Feature 1</label><input type="text" value={form.feat1} onChange={e => setForm({ ...form, feat1: e.target.value })} className="w-full bg-cream dark:bg-white/5 border border-earth-200 dark:border-white/10 rounded-xl px-4 py-3 text-navy dark:text-white focus:outline-none focus:border-gold transition-colors" placeholder="e.g. Irrigated" /></div>
