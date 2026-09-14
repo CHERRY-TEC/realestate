@@ -21,13 +21,13 @@ const card = {
 };
 
 function getYouTubeEmbed(url: string): string | null {
-  if (!url) return null;
+  if (!url || url.startsWith("data:")) return null;
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s]+)/);
   return match ? `https://www.youtube.com/embed/${match[1]}` : null;
 }
 
 function getVimeoEmbed(url: string): string | null {
-  if (!url) return null;
+  if (!url || url.startsWith("data:")) return null;
   const match = url.match(/vimeo\.com\/(\d+)/);
   return match ? `https://player.vimeo.com/video/${match[1]}` : null;
 }
@@ -259,13 +259,23 @@ export default function Properties() {
                       Property Video Tour
                     </h3>
                     <div className="relative rounded-xl overflow-hidden aspect-video bg-navy">
-                      <iframe
-                        src={getEmbedUrl(selected.video_url) || selected.video_url}
-                        className="absolute inset-0 w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title={`${selected.name} video tour`}
-                      />
+                      {selected.video_url.startsWith("data:video") ? (
+                        <video
+                          src={selected.video_url}
+                          className="w-full h-full object-contain"
+                          controls
+                          playsInline
+                          title={`${selected.name} video tour`}
+                        />
+                      ) : (
+                        <iframe
+                          src={getEmbedUrl(selected.video_url) || selected.video_url}
+                          className="absolute inset-0 w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={`${selected.name} video tour`}
+                        />
+                      )}
                     </div>
                   </div>
                 )}

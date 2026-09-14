@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
+export const maxDuration = 30;
+
 function sanitize(str: string): string {
+  if (str.length > 10000) return str;
   return str.replace(/[<>"'&]/g, (c) => {
     const map: Record<string, string> = { "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;", "&": "&amp;" };
     return map[c] || c;
@@ -11,7 +14,11 @@ function sanitize(str: string): string {
 function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
   const cleaned: Record<string, unknown> = {};
   for (const [key, val] of Object.entries(obj)) {
-    cleaned[key] = typeof val === "string" ? sanitize(val) : val;
+    if (typeof val === "string" && !val.startsWith("data:")) {
+      cleaned[key] = sanitize(val);
+    } else {
+      cleaned[key] = val;
+    }
   }
   return cleaned;
 }
