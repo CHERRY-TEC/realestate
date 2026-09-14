@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, FormEvent } from "react";
 import {
   LayoutDashboard, Home, Users, PlusCircle, LogOut, Search, Edit3, Trash2,
-  X, Upload, Star, Building2, TrendingUp, UserCheck, ArrowUpRight, Loader2
+  X, Upload, Star, Building2, TrendingUp, UserCheck, ArrowUpRight, Loader2, MessageSquare
 } from "lucide-react";
 
 interface Property {
@@ -18,12 +18,17 @@ interface Lead {
   message: string; date: string; status: string; type: string;
 }
 
+interface Review {
+  id: number; name: string; rating: number; text: string; date: string; type: string;
+}
+
 const emptyProp: Property = { id: 0, name: "", type: "Agricultural", location: "", size: "", price: "", status: "Available", feat1: "", feat2: "", feat3: "", image: "", desc: "" };
 
 const tabs = [
   { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
   { id: "properties", label: "Properties", icon: <Home className="w-5 h-5" /> },
   { id: "leads", label: "Leads", icon: <Users className="w-5 h-5" /> },
+  { id: "reviews", label: "Reviews", icon: <MessageSquare className="w-5 h-5" /> },
 ];
 
 interface Props { onLogout: () => void; }
@@ -32,6 +37,7 @@ export default function AdminDashboard({ onLogout }: Props) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [properties, setProperties] = useState<Property[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editProp, setEditProp] = useState<Property | null>(null);
@@ -39,11 +45,13 @@ export default function AdminDashboard({ onLogout }: Props) {
   const [toast, setToast] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteLeadId, setDeleteLeadId] = useState<number | null>(null);
+  const [deleteReviewId, setDeleteReviewId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetch("/api/properties").then(r => r.json()).then(setProperties).catch(() => {});
     fetch("/api/leads").then(r => r.json()).then(setLeads).catch(() => {});
+    fetch("/api/reviews").then(r => r.json()).then(setReviews).catch(() => {});
   }, []);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
@@ -127,8 +135,23 @@ export default function AdminDashboard({ onLogout }: Props) {
     }
   };
 
+  const handleDeleteReview = async () => {
+    if (deleteReviewId === null) return;
+    try {
+      const res = await fetch("/api/reviews", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: deleteReviewId }) });
+      if (!res.ok) throw new Error();
+      const fresh = await fetch("/api/reviews").then(r => r.json());
+      setReviews(fresh);
+      setDeleteReviewId(null);
+      showToast("Review deleted");
+    } catch {
+      showToast("Failed to delete review");
+    }
+  };
+
   const filteredProps = properties.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.location.toLowerCase().includes(search.toLowerCase()) || p.type.toLowerCase().includes(search.toLowerCase()));
   const filteredLeads = leads.filter(l => l.name.toLowerCase().includes(search.toLowerCase()) || l.phone.includes(search));
+  const filteredReviews = reviews.filter(r => r.name.toLowerCase().includes(search.toLowerCase()));
 
   const buyerCount = leads.filter(l => l.type === "buyer").length;
   const sellerCount = leads.filter(l => l.type === "seller").length;
@@ -399,6 +422,45 @@ export default function AdminDashboard({ onLogout }: Props) {
             </div>
           </motion.div>
         )}
+
+        {/* Reviews */}
+        {activeTab === "reviews" && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 100, damping: 20 }}>
+            <div className="bg-white dark:bg-navy-light rounded-2xl border border-earth-100 dark:border-white/5 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-earth-100 dark:border-white/5">
+                      {["Name", "Type", "Rating", "Review", "Date", "Action"].map(h => (
+                        <th key={h} className="text-left px-6 py-4 text-xs font-semibold text-earth-400 dark:text-white/40 uppercase tracking-wider">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-earth-100 dark:divide-white/5">
+                    {filteredReviews.map(r => (
+                      <tr key={r.id} className="hover:bg-cream dark:hover:bg-white/[0.02] transition-colors">
+                        <td className="px-6 py-4"><div className="flex items-center gap-3"><div className="w-8 h-8 bg-navy dark:bg-gold rounded-full flex items-center justify-center text-gold dark:text-navy text-xs font-bold">{r.name.charAt(0)}</div><span className="font-semibold text-navy dark:text-white text-sm">{r.name}</span></div></td>
+                        <td className="px-6 py-4"><span className={`px-3 py-1 rounded-xl text-xs font-semibold ${r.type === "seller" ? "bg-primary-500/10 text-primary-500" : "bg-gold/10 text-gold"}`}>{r.type === "seller" ? "Seller" : "Buyer"}</span></td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-0.5">
+                            {[1, 2, 3, 4, 5].map(i => (
+                              <Star key={i} className={`w-4 h-4 ${i <= r.rating ? "text-gold fill-gold" : "text-earth-300 dark:text-white/20"}`} />
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-earth-500 dark:text-white/50 text-sm max-w-[200px] truncate">{r.text}</td>
+                        <td className="px-6 py-4 text-earth-500 dark:text-white/50 text-sm">{r.date}</td>
+                        <td className="px-6 py-4">
+                          <button onClick={() => setDeleteReviewId(r.id)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500/20 transition-colors" aria-label="Delete review"><Trash2 className="w-4 h-4" /></button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </main>
 
       {/* Delete Property Modal */}
@@ -427,6 +489,22 @@ export default function AdminDashboard({ onLogout }: Props) {
               <div className="flex gap-3">
                 <button onClick={() => setDeleteLeadId(null)} className="flex-1 bg-earth-100 dark:bg-white/5 text-earth-600 dark:text-white/60 py-3 rounded-xl font-semibold hover:bg-earth-200 dark:hover:bg-white/10 transition-colors">Cancel</button>
                 <button onClick={handleDeleteLead} className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-600 transition-colors">Delete</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Review Modal */}
+      <AnimatePresence>
+        {deleteReviewId !== null && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setDeleteReviewId(null)}>
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} onClick={e => e.stopPropagation()} className="bg-white dark:bg-navy-light rounded-2xl p-8 max-w-sm w-full shadow-2xl">
+              <h3 className="font-serif text-xl font-bold text-navy dark:text-white mb-2">Delete Review?</h3>
+              <p className="text-earth-500 dark:text-white/50 text-sm mb-6">This action cannot be undone.</p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteReviewId(null)} className="flex-1 bg-earth-100 dark:bg-white/5 text-earth-600 dark:text-white/60 py-3 rounded-xl font-semibold hover:bg-earth-200 dark:hover:bg-white/10 transition-colors">Cancel</button>
+                <button onClick={handleDeleteReview} className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-600 transition-colors">Delete</button>
               </div>
             </motion.div>
           </motion.div>

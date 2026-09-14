@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "name": "Rajesh Kumar",
+    "rating": 5,
+    "text": "Terra Vista helped me find the perfect agricultural land near Nashik. The entire process was transparent and smooth.",
+    "date": "2026-09-10",
+    "type": "buyer"
+  },
+  {
+    "id": 2,
+    "name": "Priya Sharma",
+    "rating": 5,
+    "text": "Vikram's expertise in land advisory is unmatched. He guided us through every step of purchasing our residential plot.",
+    "date": "2026-09-11",
+    "type": "buyer"
+  },
+  {
+    "id": 3,
+    "name": "Arun Mehta",
+    "rating": 4,
+    "text": "Excellent service for selling our commercial land in Hyderabad. Got a great price thanks to their market knowledge.",
+    "date": "2026-09-12",
+    "type": "seller"
+  },
+  {
+    "id": 4,
+    "name": "Sneha Patel",
+    "rating": 5,
+    "text": "Best land advisory in India. They found us a beautiful farmhouse plot in Lonavala within our budget.",
+    "date": "2026-09-13",
+    "type": "buyer"
+  }
+]
