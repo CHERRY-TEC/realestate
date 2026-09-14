@@ -1,8 +1,8 @@
 import { Pool } from "pg";
 
 const pool = new Pool({
-  connectionString: "postgresql://postgres.qhcbaqgbakuqpwzmkbrg:TERRAvista%40252@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres",
-  ssl: { rejectUnauthorized: false, require: true },
+  connectionString: "postgresql://neondb_owner:npg_S6AQBl1xjgVn@ep-noisy-bonus-axh88gf9-pooler.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require",
+  ssl: { rejectUnauthorized: false },
 });
 
 async function initDB() {
