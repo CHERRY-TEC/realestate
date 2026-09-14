@@ -1,21 +1,5 @@
 import { NextResponse } from "next/server";
-import { readFileSync, writeFileSync } from "fs";
-import { join } from "path";
-
-const DATA_PATH = join(process.cwd(), "data", "leads.json");
-
-function readData() {
-  try {
-    const raw = readFileSync(DATA_PATH, "utf-8");
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
-}
-
-function writeData(data: unknown[]) {
-  writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
-}
+import pool from "@/lib/db";
 
 function sanitize(str: string): string {
   return str.replace(/[<>"'&]/g, (c) => {
@@ -27,19 +11,15 @@ function sanitize(str: string): string {
 function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
   const cleaned: Record<string, unknown> = {};
   for (const [key, val] of Object.entries(obj)) {
-    if (typeof val === "string") {
-      cleaned[key] = sanitize(val);
-    } else {
-      cleaned[key] = val;
-    }
+    cleaned[key] = typeof val === "string" ? sanitize(val) : val;
   }
   return cleaned;
 }
 
 export async function GET() {
   try {
-    const leads = readData();
-    return NextResponse.json(leads);
+    const result = await pool.query("SELECT * FROM leads ORDER BY id DESC");
+    return NextResponse.json(result.rows);
   } catch {
     return NextResponse.json({ error: "Failed to read leads" }, { status: 500 });
   }
@@ -51,11 +31,13 @@ export async function POST(request: Request) {
     if (!body.name || !body.phone) {
       return NextResponse.json({ error: "Name and phone are required" }, { status: 400 });
     }
-    const leads = readData();
-    const newLead = { ...sanitizeObject(body), id: Date.now() };
-    leads.push(newLead);
-    writeData(leads);
-    return NextResponse.json({ success: true, lead: newLead }, { status: 201 });
+    const data = sanitizeObject(body);
+    const id = Date.now();
+    await pool.query(
+      "INSERT INTO leads (id, name, phone, email, interest, message, date, status, type) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+      [id, data.name, data.phone, data.email || "", data.interest || "", data.message || "", data.date || "", data.status || "New", data.type || "buyer"]
+    );
+    return NextResponse.json({ success: true, lead: { id, ...data } }, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -67,12 +49,12 @@ export async function PUT(request: Request) {
     if (!body.id) {
       return NextResponse.json({ error: "Missing lead ID" }, { status: 400 });
     }
-    const leads = readData();
-    const idx = leads.findIndex((l: { id: number }) => l.id === body.id);
-    if (idx === -1) return NextResponse.json({ error: "Lead not found" }, { status: 404 });
-    leads[idx] = { ...leads[idx], ...sanitizeObject(body) };
-    writeData(leads);
-    return NextResponse.json({ success: true, lead: leads[idx] });
+    const data = sanitizeObject(body);
+    await pool.query(
+      "UPDATE leads SET name=$1, phone=$2, email=$3, interest=$4, message=$5, date=$6, status=$7, type=$8 WHERE id=$9",
+      [data.name, data.phone, data.email, data.interest, data.message, data.date, data.status, data.type, body.id]
+    );
+    return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -84,9 +66,7 @@ export async function DELETE(request: Request) {
     if (!body.id) {
       return NextResponse.json({ error: "Missing lead ID" }, { status: 400 });
     }
-    const leads = readData();
-    const filtered = leads.filter((l: { id: number }) => l.id !== body.id);
-    writeData(filtered);
+    await pool.query("DELETE FROM leads WHERE id=$1", [body.id]);
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });

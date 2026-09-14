@@ -1,21 +1,5 @@
 import { NextResponse } from "next/server";
-import { readFileSync, writeFileSync } from "fs";
-import { join } from "path";
-
-const DATA_PATH = join(process.cwd(), "data", "properties.json");
-
-function readData() {
-  try {
-    const raw = readFileSync(DATA_PATH, "utf-8");
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
-}
-
-function writeData(data: unknown[]) {
-  writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
-}
+import pool from "@/lib/db";
 
 function sanitize(str: string): string {
   return str.replace(/[<>"'&]/g, (c) => {
@@ -27,20 +11,16 @@ function sanitize(str: string): string {
 function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
   const cleaned: Record<string, unknown> = {};
   for (const [key, val] of Object.entries(obj)) {
-    if (typeof val === "string") {
-      cleaned[key] = sanitize(val);
-    } else {
-      cleaned[key] = val;
-    }
+    cleaned[key] = typeof val === "string" ? sanitize(val) : val;
   }
   return cleaned;
 }
 
 export async function GET() {
   try {
-    const props = readData();
-    return NextResponse.json(props);
-  } catch {
+    const result = await pool.query("SELECT * FROM properties ORDER BY id ASC");
+    return NextResponse.json(result.rows);
+  } catch (e) {
     return NextResponse.json({ error: "Failed to read properties" }, { status: 500 });
   }
 }
@@ -51,12 +31,14 @@ export async function POST(request: Request) {
     if (!body.name || !body.location || !body.size || !body.price) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
-    const props = readData();
-    const newProp = { ...sanitizeObject(body), id: Date.now() };
-    props.push(newProp);
-    writeData(props);
-    return NextResponse.json({ success: true, property: newProp }, { status: 201 });
-  } catch {
+    const data = sanitizeObject(body);
+    const id = Date.now();
+    await pool.query(
+      "INSERT INTO properties (id, name, type, location, size, price, status, feat1, feat2, feat3, image, desc) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      [id, data.name, data.type || "Agricultural", data.location, data.size, data.price, data.status || "Available", data.feat1 || "", data.feat2 || "", data.feat3 || "", data.image || "", data.desc || ""]
+    );
+    return NextResponse.json({ success: true, property: { id, ...data } }, { status: 201 });
+  } catch (e) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
@@ -67,13 +49,13 @@ export async function PUT(request: Request) {
     if (!body.id) {
       return NextResponse.json({ error: "Missing property ID" }, { status: 400 });
     }
-    const props = readData();
-    const idx = props.findIndex((p: { id: number }) => p.id === body.id);
-    if (idx === -1) return NextResponse.json({ error: "Property not found" }, { status: 404 });
-    props[idx] = { ...props[idx], ...sanitizeObject(body) };
-    writeData(props);
-    return NextResponse.json({ success: true, property: props[idx] });
-  } catch {
+    const data = sanitizeObject(body);
+    await pool.query(
+      "UPDATE properties SET name=$1, type=$2, location=$3, size=$4, price=$5, status=$6, feat1=$7, feat2=$8, feat3=$9, image=$10, desc=$11 WHERE id=$12",
+      [data.name, data.type, data.location, data.size, data.price, data.status, data.feat1, data.feat2, data.feat3, data.image, data.desc, body.id]
+    );
+    return NextResponse.json({ success: true });
+  } catch (e) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
@@ -84,11 +66,9 @@ export async function DELETE(request: Request) {
     if (!body.id) {
       return NextResponse.json({ error: "Missing property ID" }, { status: 400 });
     }
-    const props = readData();
-    const filtered = props.filter((p: { id: number }) => p.id !== body.id);
-    writeData(filtered);
+    await pool.query("DELETE FROM properties WHERE id=$1", [body.id]);
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (e) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
