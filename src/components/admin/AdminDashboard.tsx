@@ -38,6 +38,7 @@ export default function AdminDashboard({ onLogout }: Props) {
   const [form, setForm] = useState<Property>(emptyProp);
   const [toast, setToast] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteLeadId, setDeleteLeadId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -109,6 +110,20 @@ export default function AdminDashboard({ onLogout }: Props) {
       showToast("Status updated");
     } catch {
       showToast("Failed to update status");
+    }
+  };
+
+  const handleDeleteLead = async () => {
+    if (deleteLeadId === null) return;
+    try {
+      const res = await fetch("/api/leads", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: deleteLeadId }) });
+      if (!res.ok) throw new Error();
+      const fresh = await fetch("/api/leads").then(r => r.json());
+      setLeads(fresh);
+      setDeleteLeadId(null);
+      showToast("Enquiry deleted");
+    } catch {
+      showToast("Failed to delete enquiry");
     }
   };
 
@@ -370,7 +385,12 @@ export default function AdminDashboard({ onLogout }: Props) {
                         <td className="px-6 py-4 text-earth-500 dark:text-white/50 text-sm max-w-[150px] truncate">{l.message || "—"}</td>
                         <td className="px-6 py-4 text-earth-500 dark:text-white/50 text-sm">{l.date}</td>
                         <td className="px-6 py-4"><span className={`px-3 py-1 rounded-xl text-xs font-semibold ${l.status === "New" ? "bg-yellow-500/10 text-yellow-600" : l.status === "Contacted" ? "bg-blue-500/10 text-blue-500" : "bg-green-500/10 text-green-600"}`}>{l.status}</span></td>
-                        <td className="px-6 py-4"><button onClick={() => cycleLeadStatus(l.id)} className="w-8 h-8 rounded-lg bg-gold/10 text-gold flex items-center justify-center hover:bg-gold/20 transition-colors" aria-label="Update status"><ArrowUpRight className="w-4 h-4" /></button></td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => cycleLeadStatus(l.id)} className="w-8 h-8 rounded-lg bg-gold/10 text-gold flex items-center justify-center hover:bg-gold/20 transition-colors" aria-label="Update status"><ArrowUpRight className="w-4 h-4" /></button>
+                            <button onClick={() => setDeleteLeadId(l.id)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500/20 transition-colors" aria-label="Delete enquiry"><Trash2 className="w-4 h-4" /></button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -381,7 +401,7 @@ export default function AdminDashboard({ onLogout }: Props) {
         )}
       </main>
 
-      {/* Delete Modal */}
+      {/* Delete Property Modal */}
       <AnimatePresence>
         {deleteId !== null && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setDeleteId(null)}>
@@ -391,6 +411,22 @@ export default function AdminDashboard({ onLogout }: Props) {
               <div className="flex gap-3">
                 <button onClick={() => setDeleteId(null)} className="flex-1 bg-earth-100 dark:bg-white/5 text-earth-600 dark:text-white/60 py-3 rounded-xl font-semibold hover:bg-earth-200 dark:hover:bg-white/10 transition-colors">Cancel</button>
                 <button onClick={handleDeleteProp} className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-600 transition-colors">Delete</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Lead Modal */}
+      <AnimatePresence>
+        {deleteLeadId !== null && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setDeleteLeadId(null)}>
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} onClick={e => e.stopPropagation()} className="bg-white dark:bg-navy-light rounded-2xl p-8 max-w-sm w-full shadow-2xl">
+              <h3 className="font-serif text-xl font-bold text-navy dark:text-white mb-2">Delete Enquiry?</h3>
+              <p className="text-earth-500 dark:text-white/50 text-sm mb-6">This action cannot be undone.</p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteLeadId(null)} className="flex-1 bg-earth-100 dark:bg-white/5 text-earth-600 dark:text-white/60 py-3 rounded-xl font-semibold hover:bg-earth-200 dark:hover:bg-white/10 transition-colors">Cancel</button>
+                <button onClick={handleDeleteLead} className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-600 transition-colors">Delete</button>
               </div>
             </motion.div>
           </motion.div>
