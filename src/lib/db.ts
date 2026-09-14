@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 
 const pool = new Pool({
-  connectionString: "postgresql://postgres:[TERRAvista@252]@db.qhcbaqgbakuqpwzmkbrg.supabase.co:5432/postgres",
+  connectionString: "postgresql://postgres.qhcbaqgbakuqpwzmkbrg:TERRAvista%40252@aws-0-ap-south-1.pooler.supabase.com:6543/postgres",
   ssl: { rejectUnauthorized: false },
 });
 
