@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, FormEvent } from "react";
 import {
   LayoutDashboard, Home, Users, PlusCircle, LogOut, Search, Edit3, Trash2,
-  X, Upload, Star, Building2, TrendingUp, UserCheck, ArrowUpRight, Loader2, MessageSquare
+  X, Upload, Star, Building2, TrendingUp, UserCheck, ArrowUpRight, Loader2, MessageSquare, Video
 } from "lucide-react";
 
 interface Property {
