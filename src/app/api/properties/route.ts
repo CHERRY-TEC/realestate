@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 function sanitize(str: string): string {
   if (str.length > 10000) return str;

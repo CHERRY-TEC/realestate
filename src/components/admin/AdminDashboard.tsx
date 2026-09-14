@@ -109,7 +109,7 @@ export default function AdminDashboard({ onLogout }: Props) {
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 15 * 1024 * 1024) { showToast("Video must be under 15MB"); return; }
+    if (file.size > 100 * 1024 * 1024) { showToast("Video must be under 100MB"); return; }
     const reader = new FileReader();
     reader.onload = (ev) => setForm({ ...form, video_url: ev.target?.result as string });
     reader.readAsDataURL(file);
@@ -390,7 +390,7 @@ export default function AdminDashboard({ onLogout }: Props) {
                         <button type="button" onClick={() => setForm({ ...form, video_url: "" })} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"><X className="w-3 h-3" /></button>
                       </div>
                     ) : (
-                      <><Video className="w-8 h-8 text-earth-300 mx-auto mb-2" /><p className="text-earth-400 text-sm">Click to upload property video</p><p className="text-earth-300 text-xs mt-1">MP4, MOV up to 15MB</p></>
+                      <><Video className="w-8 h-8 text-earth-300 mx-auto mb-2" /><p className="text-earth-400 text-sm">Click to upload property video</p><p className="text-earth-300 text-xs mt-1">MP4, MOV up to 100MB</p></>
                     )}
                   </div>
                 </div>
