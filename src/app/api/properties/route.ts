@@ -20,7 +20,7 @@ export async function GET() {
   try {
     const result = await pool.query("SELECT * FROM properties ORDER BY id ASC");
     return NextResponse.json(result.rows);
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Failed to read properties" }, { status: 500 });
   }
 }
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       [id, data.name, data.type || "Agricultural", data.location, data.size, data.price, data.status || "Available", data.feat1 || "", data.feat2 || "", data.feat3 || "", data.image || "", data.desc || ""]
     );
     return NextResponse.json({ success: true, property: { id, ...data } }, { status: 201 });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
@@ -55,7 +55,7 @@ export async function PUT(request: Request) {
       [data.name, data.type, data.location, data.size, data.price, data.status, data.feat1, data.feat2, data.feat3, data.image, data.desc, body.id]
     );
     return NextResponse.json({ success: true });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
@@ -68,7 +68,7 @@ export async function DELETE(request: Request) {
     }
     await pool.query("DELETE FROM properties WHERE id=$1", [body.id]);
     return NextResponse.json({ success: true });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
