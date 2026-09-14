@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import pool, { ensureDB } from "@/lib/db";
 
 function sanitize(str: string): string {
   return str.replace(/[<>"'&]/g, (c) => {
@@ -18,6 +18,7 @@ function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
 
 export async function GET() {
   try {
+    await ensureDB();
     const result = await pool.query("SELECT * FROM leads ORDER BY id DESC");
     return NextResponse.json(result.rows);
   } catch {
@@ -27,6 +28,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    await ensureDB();
     const body = await request.json();
     if (!body.name || !body.phone) {
       return NextResponse.json({ error: "Name and phone are required" }, { status: 400 });
@@ -45,6 +47,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    await ensureDB();
     const body = await request.json();
     if (!body.id) {
       return NextResponse.json({ error: "Missing lead ID" }, { status: 400 });
@@ -62,6 +65,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    await ensureDB();
     const body = await request.json();
     if (!body.id) {
       return NextResponse.json({ error: "Missing lead ID" }, { status: 400 });

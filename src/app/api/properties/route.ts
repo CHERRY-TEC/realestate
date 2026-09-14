@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import pool, { ensureDB } from "@/lib/db";
 
 export const maxDuration = 60;
 
@@ -25,6 +25,7 @@ function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
 
 export async function GET() {
   try {
+    await ensureDB();
     const result = await pool.query("SELECT * FROM properties ORDER BY id ASC");
     return NextResponse.json(result.rows);
   } catch {
@@ -34,6 +35,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    await ensureDB();
     const body = await request.json();
     if (!body.name || !body.location || !body.size || !body.price) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -52,6 +54,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    await ensureDB();
     const body = await request.json();
     if (!body.id) {
       return NextResponse.json({ error: "Missing property ID" }, { status: 400 });
@@ -69,6 +72,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    await ensureDB();
     const body = await request.json();
     if (!body.id) {
       return NextResponse.json({ error: "Missing property ID" }, { status: 400 });
