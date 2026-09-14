@@ -10,7 +10,7 @@ import {
 interface Property {
   id: number; name: string; type: string; location: string; size: string;
   price: string; status: string; feat1: string; feat2: string; feat3: string;
-  image: string; desc: string;
+  image: string; description: string;
 }
 
 interface Lead {
@@ -22,7 +22,7 @@ interface Review {
   id: number; name: string; rating: number; text: string; date: string; type: string;
 }
 
-const emptyProp: Property = { id: 0, name: "", type: "Agricultural", location: "", size: "", price: "", status: "Available", feat1: "", feat2: "", feat3: "", image: "", desc: "" };
+const emptyProp: Property = { id: 0, name: "", type: "Agricultural", location: "", size: "", price: "", status: "Available", feat1: "", feat2: "", feat3: "", image: "", description: "" };
 
 const tabs = [
   { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -372,10 +372,10 @@ export default function AdminDashboard({ onLogout }: Props) {
                   <div><label className="block text-earth-600 dark:text-white/60 text-sm mb-2 font-medium">Feature 2</label><input type="text" value={form.feat2} onChange={e => setForm({ ...form, feat2: e.target.value })} className="w-full bg-cream dark:bg-white/5 border border-earth-200 dark:border-white/10 rounded-xl px-4 py-3 text-navy dark:text-white focus:outline-none focus:border-gold transition-colors" placeholder="e.g. Road Access" /></div>
                   <div><label className="block text-earth-600 dark:text-white/60 text-sm mb-2 font-medium">Feature 3</label><input type="text" value={form.feat3} onChange={e => setForm({ ...form, feat3: e.target.value })} className="w-full bg-cream dark:bg-white/5 border border-earth-200 dark:border-white/10 rounded-xl px-4 py-3 text-navy dark:text-white focus:outline-none focus:border-gold transition-colors" placeholder="e.g. Water Supply" /></div>
                 </div>
-                <div>
-                  <label className="block text-earth-600 dark:text-white/60 text-sm mb-2 font-medium">Description</label>
-                  <textarea value={form.desc} onChange={e => setForm({ ...form, desc: e.target.value })} rows={3} className="w-full bg-cream dark:bg-white/5 border border-earth-200 dark:border-white/10 rounded-xl px-4 py-3 text-navy dark:text-white focus:outline-none focus:border-gold transition-colors resize-none" placeholder="Brief description..." />
-                </div>
+                  <div>
+                    <label className="block text-earth-600 dark:text-white/60 text-sm mb-2 font-medium">Description</label>
+                    <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} className="w-full bg-cream dark:bg-white/5 border border-earth-200 dark:border-white/10 rounded-xl px-4 py-3 text-navy dark:text-white focus:outline-none focus:border-gold transition-colors resize-none" placeholder="Brief description..." />
+                  </div>
                 <div className="flex gap-3 pt-2">
                   <button type="submit" disabled={saving} className="bg-gold text-navy px-8 py-3 rounded-xl font-bold hover:bg-gold-glow transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2">{saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : editProp ? "Update Property" : "Save Property"}</button>
                   <button type="button" onClick={() => { setShowForm(false); setEditProp(null); setForm(emptyProp); }} className="bg-earth-100 dark:bg-white/5 text-earth-600 dark:text-white/60 px-6 py-3 rounded-xl font-semibold hover:bg-earth-200 dark:hover:bg-white/10 transition-colors">Cancel</button>

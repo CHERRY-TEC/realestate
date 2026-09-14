@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 interface Property {
   id: number; name: string; type: string; location: string; size: string;
   price: string; status: string; feat1: string; feat2: string; feat3: string;
-  image: string; desc: string;
+  image: string; description: string;
 }
 
 const container = {
