@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
-      for (const [key, value] of formData.entries()) {
+      for (const [key, value] of Array.from(formData.entries())) {
         if (key === "video" && value instanceof File) {
           videoFile = value;
         } else if (typeof value === "string") {
@@ -77,7 +77,7 @@ export async function PUT(request: Request) {
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
-      for (const [key, value] of formData.entries()) {
+      for (const [key, value] of Array.from(formData.entries())) {
         if (key === "video" && value instanceof File) {
           videoFile = value;
         } else if (typeof value === "string") {
