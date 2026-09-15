@@ -47,6 +47,7 @@ export default function AdminDashboard({ onLogout }: Props) {
   const [deleteLeadId, setDeleteLeadId] = useState<number | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetch("/api/properties").then(r => r.json()).then(setProperties).catch(() => {});
@@ -61,12 +62,30 @@ export default function AdminDashboard({ onLogout }: Props) {
     if (!form.name || !form.location || !form.size || !form.price) { showToast("Please fill required fields"); return; }
     setSaving(true);
     try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("type", form.type);
+      formData.append("location", form.location);
+      formData.append("size", form.size);
+      formData.append("price", form.price);
+      formData.append("status", form.status);
+      formData.append("feat1", form.feat1);
+      formData.append("feat2", form.feat2);
+      formData.append("feat3", form.feat3);
+      formData.append("image", form.image);
+      formData.append("description", form.description);
+      if (videoFile) {
+        formData.append("video", videoFile);
+      } else {
+        formData.append("video_url", form.video_url);
+      }
       if (editProp) {
-        const res = await fetch("/api/properties", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, id: editProp.id }) });
+        formData.append("id", String(editProp.id));
+        const res = await fetch("/api/properties", { method: "PUT", body: formData });
         if (!res.ok) throw new Error();
         showToast("Property updated");
       } else {
-        const res = await fetch("/api/properties", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+        const res = await fetch("/api/properties", { method: "POST", body: formData });
         if (!res.ok) throw new Error();
         showToast("Property added — " + form.name);
       }
@@ -75,6 +94,7 @@ export default function AdminDashboard({ onLogout }: Props) {
       setShowForm(false);
       setEditProp(null);
       setForm(emptyProp);
+      setVideoFile(null);
       setActiveTab("properties");
     } catch {
       showToast("Failed to save property");
@@ -109,10 +129,10 @@ export default function AdminDashboard({ onLogout }: Props) {
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 100 * 1024 * 1024) { showToast("Video must be under 100MB"); return; }
-    const reader = new FileReader();
-    reader.onload = (ev) => setForm({ ...form, video_url: ev.target?.result as string });
-    reader.readAsDataURL(file);
+    if (file.size > 50 * 1024 * 1024) { showToast("Video must be under 50MB"); return; }
+    setVideoFile(file);
+    const url = URL.createObjectURL(file);
+    setForm({ ...form, video_url: url });
   };
 
   const cycleLeadStatus = async (id: number) => {
@@ -382,15 +402,15 @@ export default function AdminDashboard({ onLogout }: Props) {
                     <input type="file" accept="video/*" onChange={handleVideoUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-label="Upload property video" />
                     {form.video_url ? (
                       <div className="relative inline-block">
-                        {form.video_url.startsWith("data:video") ? (
+                        {form.video_url.startsWith("blob:") || form.video_url.startsWith("data:video") ? (
                           <video src={form.video_url} className="max-h-40 rounded-lg mx-auto" controls />
                         ) : (
                           <div className="flex items-center gap-2 text-gold"><Video className="w-5 h-5" /><span className="text-sm">Video uploaded</span></div>
                         )}
-                        <button type="button" onClick={() => setForm({ ...form, video_url: "" })} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"><X className="w-3 h-3" /></button>
+                        <button type="button" onClick={() => { setForm({ ...form, video_url: "" }); setVideoFile(null); }} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"><X className="w-3 h-3" /></button>
                       </div>
                     ) : (
-                      <><Video className="w-8 h-8 text-earth-300 mx-auto mb-2" /><p className="text-earth-400 text-sm">Click to upload property video</p><p className="text-earth-300 text-xs mt-1">MP4, MOV up to 100MB</p></>
+                      <><Video className="w-8 h-8 text-earth-300 mx-auto mb-2" /><p className="text-earth-400 text-sm">Click to upload property video</p><p className="text-earth-300 text-xs mt-1">MP4, MOV up to 50MB</p></>
                     )}
                   </div>
                 </div>
