@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   try {
     await ensureDB();
     const contentType = request.headers.get("content-type") || "";
-    let data: Record<string, string> = {};
+    const data: Record<string, string> = {};
     let videoFile: File | null = null;
 
     if (contentType.includes("multipart/form-data")) {
@@ -72,7 +72,7 @@ export async function PUT(request: Request) {
   try {
     await ensureDB();
     const contentType = request.headers.get("content-type") || "";
-    let data: Record<string, string> = {};
+    const data: Record<string, string> = {};
     let videoFile: File | null = null;
 
     if (contentType.includes("multipart/form-data")) {
